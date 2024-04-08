@@ -6,17 +6,29 @@ from antlr4.Token import Token
 from typing import Any
 
 
+def _resolve_binary_signature(left, right, callback):
+    if type(left) is not type(right):
+        print(f"Operation signature failure. expected {type(left)} x {type(left)}, but got {type(left)} x {type(right)}")
+        return "error", 0
+    return type(left), callback()
+
+
 def _resolve_expression(left, operator, right):
     match operator:
         case '/':
-            return left / right
+            return _resolve_binary_signature(left, right, lambda: left / right)
         case '*':
-            return left * right
+            return _resolve_binary_signature(left, right, lambda: left * right)
         case '+':
-            return left + right
+            return _resolve_binary_signature(left, right, lambda: left + right)
         case '-':
-            return left - right
-
+            return _resolve_binary_signature(left, right, lambda: left - right)
+        case "==":
+            return bool, left == right
+        case "&&":
+            return _resolve_binary_signature(left, right, lambda: left and right)
+        case "||":
+            return _resolve_binary_signature(left, right, lambda: left or right)
 
 class visitorImpl(languageVisitor):
     def __init__(self):
@@ -48,7 +60,8 @@ class visitorImpl(languageVisitor):
             left = self.visit(ctx.left)
             right = self.visit(ctx.right)
             operator = ctx.op.text
-            return _resolve_expression(left, operator, right)
+            # print(_resolve_expression(left[1], operator, right[1]))
+            return _resolve_expression(left[1], operator, right[1])
 
         if ctx.IDENTIFIER() is not None:
             var = self.get_symbol(str(ctx.IDENTIFIER()))
@@ -61,35 +74,48 @@ class visitorImpl(languageVisitor):
         for identifier in ctx.IDENTIFIER():
             identifier: TerminalNodeImpl
             self.add_symbol(identifier.symbol, _type)
-            print(self.symbol_table)
+
         return "error", 0
 
     def visitParantheses(self, ctx: languageParser.ParanthesesContext):
         return self.visit(ctx.expression())
 
     def visitCondition(self, ctx: languageParser.ConditionContext):
-        return super().visitCondition(ctx)
+        rtrn = self.visit(ctx.expression())
+        if rtrn:
+            return self.visit(ctx.statement(0))
+        return self.visit(ctx.statement(1))
 
     def visitWhile_loop(self, ctx: languageParser.While_loopContext):
-        return super().visitWhile_loop(ctx)
-
+        condition = self.visit(ctx.expression())
+        if condition[0] != bool:
+            print(f"While statement condition is not a bool.")
+            return "error", 0
+        return "error", 0
     def visitAssignment(self, ctx: languageParser.AssignmentContext):
         # maybe replace ctx.IDENTIFIER().symbol with str(ctx.IDENTIFIER())
         variable = self.get_symbol(ctx.IDENTIFIER().symbol)
         right = self.visit(ctx.expression())
         right_type = type(right)
-        print(variable, right, right_type, ctx.IDENTIFIER().symbol)
+        # print(variable, right, right_type, ctx.IDENTIFIER().symbol)
         if (variable[0] == "error") or right[0] == "error":
             return "error", 0
-        if (variable[0] == "int" or variable[0] == int) and (right[0] in (float, "float")):
-            print(f"Variable '{ctx.IDENTIFIER().getText()}' type is int, but the assigned value is float.")
-            return "error", 0
-        if (variable[0] == "float") and (right[0] in (int, "int")):
+        # if (variable[0] == "int" or variable[0] == int) and (right[0] in (float, "float")):
+        #     print(f"Variable '{ctx.IDENTIFIER().getText()}' type is int, but the assigned value is float.")
+        #     return "error", 0
+        # if (variable[0] in (int, "int")) and right[0] in (bool, "bool"):
+        #     print(f"Variable '{ctx.IDENTIFIER().getText()}' type is int, but assigned value is bool.")
+        #     return "error", 0
+        if variable[0] != right[0].__name__:
+            if (variable[0] == "float") and (right[0] in (int, "int")):
+                value = "float", float(right[1])
+                name: str = ctx.IDENTIFIER().symbol.text.strip()
+                self.symbol_table[name] = value
+                return value
+            else:
+                print(f"Variable '{ctx.IDENTIFIER().getText()}' type is {variable[0]}, but assigned value is {right[0].__name__}.")
+                return "error", 0
 
-            value = "float", float(right[1])
-            name: str = ctx.IDENTIFIER().symbol.text.strip()
-            self.symbol_table[name] = value
-            return value
         self.symbol_table[ctx.IDENTIFIER().symbol.text.strip()] = right
         return right
 
