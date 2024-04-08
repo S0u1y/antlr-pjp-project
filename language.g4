@@ -47,17 +47,17 @@ expression: prefix='-' expression
 
 parantheses: '(' expression ')' ;
 
-declaration: type ' ' IDENTIFIER (',' IDENTIFIER)* ';' ;
+declaration: type ' '+ IDENTIFIER (',' ' '* IDENTIFIER)* ';' ;
 
-read: 'read' IDENTIFIER (',' IDENTIFIER)* ';' ;
-write: 'write' expression (',' expression)* ';' ;
+read: 'read' ' '+ IDENTIFIER (',' IDENTIFIER)* ';' ;
+write: 'write' ' '+ expression (',' expression)* ';' ;
 
 block: '{' statement* '}' ;
 
 condition: 'if' '(' expression ')' statement ('else' statement)? ;
 while_loop: 'while' '(' expression ')' statement ;
 
-assignment: <assoc=right> IDENTIFIER '=' expression ;
+assignment: <assoc=right> IDENTIFIER ' '* '=' ' '* expression ;
 
 type: 'int' | 'float' | 'bool' | 'string' ;
 

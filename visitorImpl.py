@@ -61,7 +61,7 @@ class visitorImpl(languageVisitor):
         for identifier in ctx.IDENTIFIER():
             identifier: TerminalNodeImpl
             self.add_symbol(identifier.symbol, _type)
-
+            print(self.symbol_table)
         return "error", 0
 
     def visitParantheses(self, ctx: languageParser.ParanthesesContext):
@@ -84,10 +84,9 @@ class visitorImpl(languageVisitor):
         if (variable[0] == "int" or variable[0] == int) and (right[0] in (float, "float")):
             print(f"Variable '{ctx.IDENTIFIER().getText()}' type is int, but the assigned value is float.")
             return "error", 0
-        if (variable[0] == "float") and ((right_type == str and right == "int") or (
-                right_type == tuple and (right[0] == "int" or type(right[0]) is int)) or right_type == int):
+        if (variable[0] == "float") and (right[0] in (int, "int")):
 
-            value = "float", float(right)
+            value = "float", float(right[1])
             name: str = ctx.IDENTIFIER().symbol.text.strip()
             self.symbol_table[name] = value
             return value
