@@ -47,7 +47,7 @@ expression: prefix='-' expression
 
 parantheses: '(' expression ')' ;
 
-declaration: type IDENTIFIER (',' IDENTIFIER)* ';' ;
+declaration: type ' ' IDENTIFIER (',' IDENTIFIER)* ';' ;
 
 read: 'read' IDENTIFIER (',' IDENTIFIER)* ';' ;
 write: 'write' expression (',' expression)* ';' ;
