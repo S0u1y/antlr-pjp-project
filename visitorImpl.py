@@ -5,6 +5,8 @@ from antlr4.tree.Tree import TerminalNodeImpl
 from antlr4.Token import Token
 from typing import Any
 
+from symbol_table import SymbolTable
+
 
 def _resolve_binary_signature(left, right, callback):
     if type(left) is str and type(right) is str:
@@ -13,7 +15,8 @@ def _resolve_binary_signature(left, right, callback):
     if type(left) is not type(right):
         if type(left) is float and type(right) is int:
             return float, callback()
-        print(f"Operation signature failure. expected {type(left)} x {type(left)}, but got {type(left)} x {type(right)}")
+        print(
+            f"Operation signature failure. expected {type(left)} x {type(left)}, but got {type(left)} x {type(right)}")
         return "error", 0
     return type(left), callback()
 
@@ -45,7 +48,7 @@ def _resolve_expression(left, operator, right):
                 return "error", 0
             return str, left + right
         case "<":
-            if type(left) not in (int, float) or type(right) not in (int ,float):
+            if type(left) not in (int, float) or type(right) not in (int, float):
                 print(f"Relation operator signature error. ")
                 return "error", 0
             return bool, left < right
@@ -55,27 +58,10 @@ def _resolve_expression(left, operator, right):
                 return "error", 0
             return bool, left > right
 
+
 class visitorImpl(languageVisitor):
     def __init__(self):
-        self.symbol_table: dict[str, tuple[str, Any]] = {}
-
-    def add_symbol(self, variable: Token, type_: str):
-        name = variable.text.strip()
-        if name in self.symbol_table:
-            print(f"Variable {name} was already declared.")
-            return
-        self.symbol_table[name] = (type_, 0 if type_ == "int" else 0.0)
-        pass
-
-    def get_symbol(self, variable: Token | str):
-        name = variable
-        if type(variable) != str:
-            name = variable.text.strip()
-        if name in self.symbol_table:
-            return self.symbol_table[name]
-        print(f"Variable {name} was not declared.")
-        return "error", 0
-        pass
+        self.symbol_table: SymbolTable = SymbolTable()
 
     def visitStatement(self, ctx: languageParser.StatementContext):
         return super().visitStatement(ctx)
@@ -89,7 +75,7 @@ class visitorImpl(languageVisitor):
             return _resolve_expression(left[1], operator, right[1])
 
         if ctx.IDENTIFIER() is not None:
-            var = self.get_symbol(str(ctx.IDENTIFIER()))
+            var = self.symbol_table[str(ctx.IDENTIFIER())]
             return var
 
         return super().visitExpression(ctx)
@@ -98,7 +84,7 @@ class visitorImpl(languageVisitor):
         _type = self.visit(ctx.type_())
         for identifier in ctx.IDENTIFIER():
             identifier: TerminalNodeImpl
-            self.add_symbol(identifier.symbol, _type)
+            self.symbol_table.add_symbol(identifier.symbol, _type)
 
         return "error", 0
 
@@ -121,13 +107,14 @@ class visitorImpl(languageVisitor):
     def visitDo_while_loop(self, ctx: languageParser.Do_while_loopContext):
         condition = self.visit(ctx.expression())
         if condition[0] != bool:
-            print(f"While statement condition is not a bool at{ctx.expression().start.line}:{ctx.expression().start.column} ")
+            print(
+                f"While statement condition is not a bool at{ctx.expression().start.line}:{ctx.expression().start.column} ")
             return "error", 0
         return "error", 0
 
     def visitAssignment(self, ctx: languageParser.AssignmentContext):
         # maybe replace ctx.IDENTIFIER().symbol with str(ctx.IDENTIFIER())
-        variable = self.get_symbol(ctx.IDENTIFIER().symbol)
+        variable = self.symbol_table.get_symbol(ctx.IDENTIFIER().symbol)
         right = self.visit(ctx.expression())
         right_type = type(right)
         # print(variable, right, right_type, ctx.IDENTIFIER().symbol)
@@ -146,7 +133,8 @@ class visitorImpl(languageVisitor):
                 self.symbol_table[name] = value
                 return value
             else:
-                print(f"Variable '{ctx.IDENTIFIER().getText()}' type is {variable[0]}, but assigned value is {right[0].__name__}.")
+                print(
+                    f"Variable '{ctx.IDENTIFIER().getText()}' type is {variable[0]}, but assigned value is {right[0].__name__}.")
                 return "error", 0
 
         self.symbol_table[ctx.IDENTIFIER().symbol.text.strip()] = right
