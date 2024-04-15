@@ -1,4 +1,4 @@
-# Generated from ./language.g4 by ANTLR 4.13.1
+# Generated from language.g4 by ANTLR 4.13.1
 from antlr4 import *
 if "." in __name__:
     from .languageParser import languageParser
@@ -56,6 +56,11 @@ class languageVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by languageParser#while_loop.
     def visitWhile_loop(self, ctx:languageParser.While_loopContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by languageParser#do_while_loop.
+    def visitDo_while_loop(self, ctx:languageParser.Do_while_loopContext):
         return self.visitChildren(ctx)
 
 

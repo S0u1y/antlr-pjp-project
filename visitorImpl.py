@@ -7,7 +7,12 @@ from typing import Any
 
 
 def _resolve_binary_signature(left, right, callback):
+    if type(left) is str and type(right) is str:
+        print(f"Operation signature failure. operation does not subscribe strings")
+        return "error", 0
     if type(left) is not type(right):
+        if type(left) is float and type(right) is int:
+            return float, callback()
         print(f"Operation signature failure. expected {type(left)} x {type(left)}, but got {type(left)} x {type(right)}")
         return "error", 0
     return type(left), callback()
@@ -29,6 +34,26 @@ def _resolve_expression(left, operator, right):
             return _resolve_binary_signature(left, right, lambda: left and right)
         case "||":
             return _resolve_binary_signature(left, right, lambda: left or right)
+        case "%":
+            if type(left) is not int or type(right) is not int:
+                print("Modulo operation can only be int x int.")
+                return "error", 0
+            return int, left % right
+        case ".":
+            if type(left) is not str or type(right) is not str:
+                print("Concat operation takes only strings.")
+                return "error", 0
+            return str, left + right
+        case "<":
+            if type(left) not in (int, float) or type(right) not in (int ,float):
+                print(f"Relation operator signature error. ")
+                return "error", 0
+            return bool, left < right
+        case ">":
+            if type(left) not in (int, float) or type(right) not in (int, float):
+                print(f"Relation operator signature error. ")
+                return "error", 0
+            return bool, left > right
 
 class visitorImpl(languageVisitor):
     def __init__(self):
@@ -92,6 +117,14 @@ class visitorImpl(languageVisitor):
             print(f"While statement condition is not a bool.")
             return "error", 0
         return "error", 0
+
+    def visitDo_while_loop(self, ctx: languageParser.Do_while_loopContext):
+        condition = self.visit(ctx.expression())
+        if condition[0] != bool:
+            print(f"While statement condition is not a bool at{ctx.expression().start.line}:{ctx.expression().start.column} ")
+            return "error", 0
+        return "error", 0
+
     def visitAssignment(self, ctx: languageParser.AssignmentContext):
         # maybe replace ctx.IDENTIFIER().symbol with str(ctx.IDENTIFIER())
         variable = self.get_symbol(ctx.IDENTIFIER().symbol)
@@ -106,8 +139,8 @@ class visitorImpl(languageVisitor):
         # if (variable[0] in (int, "int")) and right[0] in (bool, "bool"):
         #     print(f"Variable '{ctx.IDENTIFIER().getText()}' type is int, but assigned value is bool.")
         #     return "error", 0
-        if variable[0] != right[0].__name__:
-            if (variable[0] == "float") and (right[0] in (int, "int")):
+        if variable[0] != right[0].__name__ and (variable[0] != "string" and right is not str):
+            if (variable[0] in (float, "float")) and (right[0] in (int, "int")):
                 value = "float", float(right[1])
                 name: str = ctx.IDENTIFIER().symbol.text.strip()
                 self.symbol_table[name] = value

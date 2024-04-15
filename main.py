@@ -7,6 +7,11 @@ from languageLexer import languageLexer
 from languageParser import languageParser
 from visitorImpl import visitorImpl
 
+#skupina B
+#do while
+# do statement
+# while (expression);
+
 if __name__ == '__main__':
     argv = sys.argv
     input_stream = FileStream('test1.txt')
