@@ -1,0 +1,5 @@
+push I 1
+itof
+push F 0.5
+itof
+add
