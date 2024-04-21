@@ -62,13 +62,6 @@ expression: prefix='-' expression # unaryMinus
           | prefix='!' expression # logicalNot
           | expression op=(MUL | DIV | MOD) expression # mulDivMod
           | expression op=(ADD | SUB | CONCAT) expression # addSubConcat
-          | INT_LITERAL op=greater_lesser INT_LITERAL #glI
-          | FLOAT_LITERAL op=greater_lesser FLOAT_LITERAL #glF
-          | STRING_LITERAL op=greater_lesser STRING_LITERAL #glS
-          | INT_LITERAL op=equal_notequal INT_LITERAL # eqI
-          | FLOAT_LITERAL op=equal_notequal FLOAT_LITERAL #eqF
-          | BOOL_LITERAL op=equal_notequal BOOL_LITERAL #eqB
-          | STRING_LITERAL op=equal_notequal STRING_LITERAL #eqS
           | expression op=(LT | GT) expression # lesserGreater
           | expression op=(EQUAL | NOTEQUAL) expression # equalNotEqual
           | expression op=AND expression # logicalAnd
@@ -81,9 +74,6 @@ expression: prefix='-' expression # unaryMinus
           | '(' expression ')' # parentheses
           | <assoc=right> IDENTIFIER '=' expression # assignment
           ;
-
-greater_lesser: (LT | GT) ;
-equal_notequal: (EQUAL | NOTEQUAL) ;
 
 
 type_keyword: 'int' | 'float' | 'bool' | 'string';

@@ -1,5 +1,6 @@
 push I 1
 itof
-push F 0.5
-itof
+push F 2.3
 add
+push F 2.5
+gt F

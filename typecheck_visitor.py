@@ -138,6 +138,7 @@ class TypeCheckingVisitor(languageVisitor):
     def visitAddSubConcat(self, ctx: languageParser.AddSubConcatContext):
         left = self.visit(ctx.expression()[0])
         right = self.visit(ctx.expression()[1])
+        print(ctx.expression())
 
         if (left == Type.Error) or (right == Type.Error):
             return Type.Error

@@ -1,4 +1,4 @@
-# Generated from language.g4 by ANTLR 4.13.1
+# Generated from ./language.g4 by ANTLR 4.13.1
 from antlr4 import *
 if "." in __name__:
     from .languageParser import languageParser
@@ -54,11 +54,6 @@ class languageVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by languageParser#glF.
-    def visitGlF(self, ctx:languageParser.GlFContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by languageParser#mulDivMod.
     def visitMulDivMod(self, ctx:languageParser.MulDivModContext):
         return self.visitChildren(ctx)
@@ -79,18 +74,8 @@ class languageVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by languageParser#glI.
-    def visitGlI(self, ctx:languageParser.GlIContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by languageParser#addSubConcat.
     def visitAddSubConcat(self, ctx:languageParser.AddSubConcatContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by languageParser#eqS.
-    def visitEqS(self, ctx:languageParser.EqSContext):
         return self.visitChildren(ctx)
 
 
@@ -119,18 +104,8 @@ class languageVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by languageParser#glS.
-    def visitGlS(self, ctx:languageParser.GlSContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by languageParser#stringLiteral.
     def visitStringLiteral(self, ctx:languageParser.StringLiteralContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by languageParser#eqB.
-    def visitEqB(self, ctx:languageParser.EqBContext):
         return self.visitChildren(ctx)
 
 
@@ -144,33 +119,13 @@ class languageVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by languageParser#eqF.
-    def visitEqF(self, ctx:languageParser.EqFContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by languageParser#id.
     def visitId(self, ctx:languageParser.IdContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by languageParser#eqI.
-    def visitEqI(self, ctx:languageParser.EqIContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by languageParser#logicalOr.
     def visitLogicalOr(self, ctx:languageParser.LogicalOrContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by languageParser#greater_lesser.
-    def visitGreater_lesser(self, ctx:languageParser.Greater_lesserContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by languageParser#equal_notequal.
-    def visitEqual_notequal(self, ctx:languageParser.Equal_notequalContext):
         return self.visitChildren(ctx)
 
 

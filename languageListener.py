@@ -1,4 +1,4 @@
-# Generated from language.g4 by ANTLR 4.13.1
+# Generated from ./language.g4 by ANTLR 4.13.1
 from antlr4 import *
 if "." in __name__:
     from .languageParser import languageParser
@@ -89,15 +89,6 @@ class languageListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by languageParser#glF.
-    def enterGlF(self, ctx:languageParser.GlFContext):
-        pass
-
-    # Exit a parse tree produced by languageParser#glF.
-    def exitGlF(self, ctx:languageParser.GlFContext):
-        pass
-
-
     # Enter a parse tree produced by languageParser#mulDivMod.
     def enterMulDivMod(self, ctx:languageParser.MulDivModContext):
         pass
@@ -134,30 +125,12 @@ class languageListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by languageParser#glI.
-    def enterGlI(self, ctx:languageParser.GlIContext):
-        pass
-
-    # Exit a parse tree produced by languageParser#glI.
-    def exitGlI(self, ctx:languageParser.GlIContext):
-        pass
-
-
     # Enter a parse tree produced by languageParser#addSubConcat.
     def enterAddSubConcat(self, ctx:languageParser.AddSubConcatContext):
         pass
 
     # Exit a parse tree produced by languageParser#addSubConcat.
     def exitAddSubConcat(self, ctx:languageParser.AddSubConcatContext):
-        pass
-
-
-    # Enter a parse tree produced by languageParser#eqS.
-    def enterEqS(self, ctx:languageParser.EqSContext):
-        pass
-
-    # Exit a parse tree produced by languageParser#eqS.
-    def exitEqS(self, ctx:languageParser.EqSContext):
         pass
 
 
@@ -206,30 +179,12 @@ class languageListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by languageParser#glS.
-    def enterGlS(self, ctx:languageParser.GlSContext):
-        pass
-
-    # Exit a parse tree produced by languageParser#glS.
-    def exitGlS(self, ctx:languageParser.GlSContext):
-        pass
-
-
     # Enter a parse tree produced by languageParser#stringLiteral.
     def enterStringLiteral(self, ctx:languageParser.StringLiteralContext):
         pass
 
     # Exit a parse tree produced by languageParser#stringLiteral.
     def exitStringLiteral(self, ctx:languageParser.StringLiteralContext):
-        pass
-
-
-    # Enter a parse tree produced by languageParser#eqB.
-    def enterEqB(self, ctx:languageParser.EqBContext):
-        pass
-
-    # Exit a parse tree produced by languageParser#eqB.
-    def exitEqB(self, ctx:languageParser.EqBContext):
         pass
 
 
@@ -251,15 +206,6 @@ class languageListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by languageParser#eqF.
-    def enterEqF(self, ctx:languageParser.EqFContext):
-        pass
-
-    # Exit a parse tree produced by languageParser#eqF.
-    def exitEqF(self, ctx:languageParser.EqFContext):
-        pass
-
-
     # Enter a parse tree produced by languageParser#id.
     def enterId(self, ctx:languageParser.IdContext):
         pass
@@ -269,39 +215,12 @@ class languageListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by languageParser#eqI.
-    def enterEqI(self, ctx:languageParser.EqIContext):
-        pass
-
-    # Exit a parse tree produced by languageParser#eqI.
-    def exitEqI(self, ctx:languageParser.EqIContext):
-        pass
-
-
     # Enter a parse tree produced by languageParser#logicalOr.
     def enterLogicalOr(self, ctx:languageParser.LogicalOrContext):
         pass
 
     # Exit a parse tree produced by languageParser#logicalOr.
     def exitLogicalOr(self, ctx:languageParser.LogicalOrContext):
-        pass
-
-
-    # Enter a parse tree produced by languageParser#greater_lesser.
-    def enterGreater_lesser(self, ctx:languageParser.Greater_lesserContext):
-        pass
-
-    # Exit a parse tree produced by languageParser#greater_lesser.
-    def exitGreater_lesser(self, ctx:languageParser.Greater_lesserContext):
-        pass
-
-
-    # Enter a parse tree produced by languageParser#equal_notequal.
-    def enterEqual_notequal(self, ctx:languageParser.Equal_notequalContext):
-        pass
-
-    # Exit a parse tree produced by languageParser#equal_notequal.
-    def exitEqual_notequal(self, ctx:languageParser.Equal_notequalContext):
         pass
 
 

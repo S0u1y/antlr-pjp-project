@@ -6,8 +6,6 @@ from symbol_table import SymbolTable
 from type_enum import Type
 
 
-
-
 class OutputVisitor(languageVisitor):
     def __init__(self, symbol_table: SymbolTable, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -27,7 +25,7 @@ class OutputVisitor(languageVisitor):
 
     def resolve_itof_binary_op(self, left: ParserRuleContext, right: ParserRuleContext):
         if isinstance(left, languageParser.IntLiteralContext) and isinstance(
-            right, languageParser.FloatLiteralContext
+                right, languageParser.FloatLiteralContext
         ):
             self.output_list.append("itof")
             return True
@@ -36,34 +34,48 @@ class OutputVisitor(languageVisitor):
         resolved = []
         left = ctx.expression()[0]
         right = ctx.expression()[1]
+
         l = self.visit(left)
-        resolved.append(self.resolve_itof_binary_op(left, right))
+        # resolved.append(self.resolve_itof_binary_op(left, right))
 
         r = self.visit(right)
-        resolved.append(self.resolve_itof_binary_op(right, left))
-
-        if l == "I" and r == "F":
+        # resolved.append(self.resolve_itof_binary_op(right, left))
+        # print("lr", l, r)
+        if l[0] == "I" and (r[0] == "F" or r == "F"):
+            if self.output_list[-1].startswith("push"):
+                self.output_list.insert(-1, "itof")
+            else:
+                self.output_list.append("itof")
+            return "F"
+            pass
+        elif l[0] == "F" and (r[0] == "I" or r == "I"):
+            # self.output_list.insert(-1, "itof")
             self.output_list.append("itof")
+            return "F"
+            pass
+        return l[0]
+
         pass
 
     def visitIntLiteral(self, ctx: languageParser.IntLiteralContext):
         self.output_list.append(f"push I {ctx.INT_LITERAL().getText()}")
-        return "I"
+        return "I", ctx.INT_LITERAL().getText()
 
     def visitFloatLiteral(self, ctx: languageParser.FloatLiteralContext):
         self.output_list.append(f"push F {ctx.FLOAT_LITERAL().getText()}")
-        return "F"
+        return "F", ctx.FLOAT_LITERAL().getText()
 
     def visitBoolLiteral(self, ctx: languageParser.BoolLiteralContext):
         self.output_list.append(f"push B {ctx.BOOL_LITERAL().getText()}")
-        return "B"
+        return "B", ctx.BOOL_LITERAL().getText()
 
     def visitStringLiteral(self, ctx: languageParser.StringLiteralContext):
         self.output_list.append(f"push S {ctx.STRING_LITERAL().getText()}")
-        return "S"
+        return "S", ctx.STRING_LITERAL().getText()
 
     def visitParentheses(self, ctx: languageParser.ParenthesesContext):
-        return self.visit(ctx.expression())
+        v = self.visit(ctx.expression())
+        return v
 
     def visitWrite_statement(self, ctx: languageParser.Write_statementContext):
         for expression in ctx.expression():
@@ -106,13 +118,7 @@ class OutputVisitor(languageVisitor):
         self.output_list.append(f"load {ctx.IDENTIFIER().getText()}")
 
     def visitMulDivMod(self, ctx: languageParser.MulDivModContext):
-        left = ctx.expression()[0]
-        right = ctx.expression()[1]
-        self.visit(left)
-        self.resolve_itof_binary_op(left, right)
-
-        self.visit(right)
-        self.resolve_itof_binary_op(right, left)
+        ret = self.resolve_left_right_itof(ctx)
 
         match ctx.op.type:
             case languageParser.MUL:
@@ -122,8 +128,10 @@ class OutputVisitor(languageVisitor):
             case languageParser.MOD:
                 self.output_list.append("mod")
 
+        return ret
+
     def visitAddSubConcat(self, ctx: languageParser.MulDivModContext):
-        self.resolve_left_right_itof(ctx)
+        ret = self.resolve_left_right_itof(ctx)
 
         match ctx.op.type:
             case languageParser.ADD:
@@ -133,33 +141,29 @@ class OutputVisitor(languageVisitor):
             case languageParser.CONCAT:
                 self.output_list.append("concat")
 
-    def visitLesserGreater(self, ctx: languageParser.MulDivModContext):
-        left = ctx.expression()[0]
-        right = ctx.expression()[1]
-        self.visit(left)
-        self.resolve_itof_binary_op(left, right)
+        return ret
 
-        self.visit(right)
-        self.resolve_itof_binary_op(right, left)
+    def visitLesserGreater(self, ctx: languageParser.MulDivModContext):
+        ret = self.resolve_left_right_itof(ctx)
 
         match ctx.op.type:
             case languageParser.LT:
-                self.output_list.append("lt")
+                self.output_list.append("lt " + ret[0])
             case languageParser.GT:
-                self.output_list.append("gt")
+                self.output_list.append("gt " + ret[0])
 
     def visitEqualNotEqual(self, ctx: languageParser.MulDivModContext):
         left = ctx.expression()[0]
         right = ctx.expression()[1]
-        self.visit(left)
-        self.visit(right)
+        l = self.visit(left)
+        r = self.visit(right)
 
         match ctx.op.type:
             case languageParser.EQUAL:
-                self.output_list.append("eq")
+                self.output_list.append("eq " + l[0])
             case languageParser.NOTEQUAL:
-                self.output_list.append("eq")
-                self.output_list.append("not")
+                self.output_list.append("eq " + l[0])
+                self.output_list.append("not " + l[0])
 
     def visitLogicalAnd(self, ctx: languageParser.MulDivModContext):
         left = ctx.expression()[0]
@@ -218,7 +222,7 @@ class OutputVisitor(languageVisitor):
 
         # itof
         if self.symbol_table[ctx.IDENTIFIER().symbol] == Type.Float and isinstance(
-            ctx.expression(), languageParser.IntLiteralContext
+                ctx.expression(), languageParser.IntLiteralContext
         ):
             self.output_list.append("itof")
 
@@ -229,59 +233,6 @@ class OutputVisitor(languageVisitor):
             self.output_list.append(f"pop")
 
         return ctx.expression()
-
-
-    # TODO use symbol table for types!
-    def visitGlI(self, ctx:languageParser.GlIContext):
-        left = ctx.INT_LITERAL(0).getText()
-        right = ctx.INT_LITERAL(1).getText()
-
-        if ctx.op.getText() == ">":
-            return "I", left, right, "gt"
-        return "I", left, right, "lt"
-
-    def visitGlF(self, ctx: languageParser.GlFContext):
-        left = ctx.FLOAT_LITERAL(0).getText()
-        right = ctx.FLOAT_LITERAL(1).getText()
-
-        if ctx.op.getText() == ">":
-            return "F", left, right, "gt"
-        return "F", left, right, "lt"
-
-    def visitGlS(self, ctx: languageParser.GlSContext):
-        left = ctx.STRING_LITERAL(0).getText()
-        right = ctx.STRING_LITERAL(1).getText()
-
-        if ctx.op.getText() == ">":
-            return "S", left, right, "gt"
-        return "S", left, right, "lt"
-
-    def visitEqI(self, ctx: languageParser.EqIContext):
-        left = ctx.INT_LITERAL(0).getText()
-        right = ctx.INT_LITERAL(1).getText()
-
-        return "I", left, right, "eq"
-
-    def visitEqB(self, ctx: languageParser.EqBContext):
-        left = ctx.BOOL_LITERAL(0).getText()
-        right = ctx.BOOL_LITERAL(1).getText()
-
-        return "B", left, right, "eq"
-
-    def visitEqF(self, ctx: languageParser.EqFContext):
-        left = ctx.FLOAT_LITERAL(0).getText()
-        right = ctx.FLOAT_LITERAL(1).getText()
-
-        return "F", left, right, "eq"
-
-    def visitEqS(self, ctx: languageParser.EqSContext):
-        left = ctx.STRING_LITERAL(0).getText()
-        right = ctx.STRING_LITERAL(1).getText()
-
-        # self.output_list.append(f"push S {left}")
-        # self.output_list.append(f"push S {right}")
-        # self.output_list.append(f"eq S")
-        return "S", left, right, "eq"
 
     def visitStatement(self, ctx: languageParser.StatementContext):
         # expr: languageParser.ExpressionContext = ctx.expression()
@@ -298,8 +249,3 @@ class OutputVisitor(languageVisitor):
                 pass
         else:
             return super().visitStatement(ctx)
-
-
-
-
-
