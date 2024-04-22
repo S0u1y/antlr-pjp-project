@@ -112,7 +112,7 @@ class OutputVisitor(languageVisitor):
             case "string":
                 self.output_list.append('push S ""')
             case "bool":
-                self.output_list.append("push B true")
+                self.output_list.append("push B false")
 
     def visitId(self, ctx: languageParser.IdContext):
         self.output_list.append(f"load {ctx.IDENTIFIER().getText()}")

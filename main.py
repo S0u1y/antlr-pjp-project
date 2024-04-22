@@ -12,7 +12,7 @@ from typecheck_visitor import TypeCheckingVisitor
 
 
 def main(argv):
-    input_stream = FileStream("test1.txt")
+    input_stream = FileStream("test2.txt")
     lexer = languageLexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = languageParser(stream)
